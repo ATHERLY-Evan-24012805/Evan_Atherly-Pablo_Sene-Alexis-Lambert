@@ -44,6 +44,7 @@ final class Router
         ) ?? $path;
 
         // Anchor both ends so "/sessions" never matches "/sessions/12".
+        print "test Qdev3";
         $this->routes[] = [
             'method'     => strtoupper($method),
             'regex'      => '#^' . $regexPath . '$#',
