@@ -1,3 +1,3 @@
-Evan atherly : DEV1
-Pablo sene : DEV2
-Alexis lambert : DEV3
+Evan atherly : DEV1 <br>
+Pablo sene : DEV2 <br>
+Alexis lambert : DEV3 <br>
