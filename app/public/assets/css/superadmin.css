@@ -1,0 +1,784 @@
+/*
+ * Super admin zone — login + panel.
+ * Reuses the auth card classes (auth.css) but overrides the palette to a
+ * dark "restricted area" theme, so this surface is visibly distinct from the
+ * regular user login. Loaded after auth.css in layout/superadmin.php.
+ */
+
+body.superadmin-body {
+    background-image:
+            radial-gradient(ellipse 600px 400px at 10% 10%, rgba(15, 23, 42, .10) 0%, transparent 70%),
+            radial-gradient(ellipse 400px 300px at 90% 90%, rgba(220, 38, 38, .07) 0%, transparent 70%);
+}
+
+/* Dark header instead of the brand blue */
+.superadmin-body .card-header {
+    background: #0f172a;
+}
+.superadmin-body .card-header::after {
+    background: rgba(220, 38, 38, .10);
+}
+
+.superadmin-body .accent-bar {
+    background: linear-gradient(90deg, #0f172a 0%, #dc2626 100%);
+}
+
+/* Restricted-area badge under the title */
+.superadmin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: .15rem;
+    padding: .25rem .7rem;
+    border-radius: 999px;
+    background: rgba(220, 38, 38, .14);
+    color: #fca5a5;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    position: relative;
+    z-index: 1;
+}
+.superadmin-badge svg {
+    width: 13px;
+    height: 13px;
+}
+
+/* Dark submit button to match the header */
+.superadmin-body .btn-submit {
+    background: #0f172a;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, .3);
+}
+.superadmin-body .btn-submit:hover {
+    background: #1e293b;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, .35);
+}
+
+/* Full-page dashboard (panel) — opt out of the centered auth-card layout.
+   Only the dashboard sets `superadmin-body--full`; the login keeps the card. */
+body.superadmin-body--full {
+    display: block;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Lift the 480px cap auth.css sets on `auth-body > main` (login/register). */
+body.superadmin-body--full > main {
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
+}
+
+.superadmin-dashboard {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Full-width dark header bar */
+.dashboard-header {
+    background: #0f172a;
+    background-image: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+    border-bottom: 3px solid #dc2626;
+}
+.dashboard-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.4rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+.dashboard-header h1 {
+    color: #fff;
+    font-size: 1.25rem;
+    margin: 0;
+}
+.dashboard-header .panel-greeting {
+    font-size: .82rem;
+    color: rgba(255, 255, 255, .72);
+    margin: .25rem 0 0;
+}
+.dashboard-header .logout-form {
+    margin: 0;
+}
+
+/* Content area fills the remaining height */
+.dashboard-content {
+    flex: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+
+/* Logout lives in the dark header bar — light outline on the dark background */
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .55rem 1.1rem;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .06);
+    color: rgba(255, 255, 255, .9);
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.btn-logout:hover {
+    background: rgba(220, 38, 38, .18);
+    border-color: rgba(220, 38, 38, .5);
+    color: #fff;
+}
+
+/* Navigation bar inside the dark header */
+.dashboard-nav-inner {
+    display: flex;
+    gap: .35rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    /* Let the sub-tabs scroll horizontally instead of overflowing/clipping
+       on narrow screens. Scrollbar hidden — the cut-off edge hints scroll. */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;              /* Firefox */
+    -webkit-overflow-scrolling: touch;  /* momentum on iOS */
+}
+.dashboard-nav-inner::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .85rem 1rem;
+    flex: 0 0 auto;       /* keep tabs at natural width — don't squeeze */
+    white-space: nowrap;
+    color: rgba(255, 255, 255, .65);
+    font-size: .88rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+}
+.nav-link:hover {
+    color: #fff;
+}
+.nav-link.is-active {
+    color: #fff;
+    border-bottom-color: #dc2626;
+}
+
+/* Sub-page placeholder (navigation shell — no business logic yet) */
+.page-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: .65rem;
+    padding: 3.5rem 2rem;
+    border: 1px dashed var(--gray-200, #e5e7eb);
+    border-radius: 12px;
+    background: #fff;
+}
+.page-placeholder-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, .06);
+    color: #0f172a;
+}
+.page-placeholder h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+.page-placeholder p {
+    color: var(--gray-600);
+    font-size: .9rem;
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0;
+}
+.badge-soon {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-top: .5rem;
+    padding: .35rem .85rem;
+    border-radius: 999px;
+    background: rgba(220, 38, 38, .1);
+    color: #dc2626;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+/* Panel content sections (cards) */
+.panel-section {
+    background: #fff;
+    border: 1px solid var(--gray-200, #e5e7eb);
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+}
+.panel-section > h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 .35rem;
+}
+.section-lead {
+    color: var(--gray-600);
+    font-size: .85rem;
+    line-height: 1.5;
+    margin: 0 0 1.25rem;
+}
+.section-empty {
+    color: var(--gray-600);
+    font-size: .9rem;
+    margin: 0;
+}
+
+/* Add-domain form: inline row that wraps on narrow screens */
+.domain-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+}
+.domain-form-row .form-group {
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 180px;
+}
+.domain-form-row .btn-submit {
+    width: auto;
+    flex: 0 0 auto;
+}
+
+/* Domains table */
+.domain-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: .9rem;
+}
+.domain-table .col-role  { width: 14rem; }
+.domain-table .col-state { width: 14%; }
+.domain-table .col-action { width: 9.5rem; }
+.domain-table th {
+    text-align: left;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--gray-600);
+    padding: .5rem .75rem;
+    border-bottom: 2px solid var(--gray-200, #e5e7eb);
+}
+.domain-table td {
+    padding: .7rem .75rem;
+    border-bottom: 1px solid var(--gray-100, #f3f4f6);
+    color: var(--gray-800, #1f2937);
+}
+.domain-table .col-action {
+    text-align: right;
+    white-space: nowrap;
+}
+.domain-table .cell-domain {
+    font-weight: 600;
+    color: #0f172a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.domain-table tr.is-inactive .cell-domain {
+    color: var(--gray-400, #9ca3af);
+}
+
+/* Role cell: reads as text, edits on demand */
+.cell-role .role-view {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+}
+/* Pencil stays subtle until the row is hovered, so the table reads cleanly */
+.role-edit-toggle {
+    opacity: 0;
+    transition: opacity .15s;
+}
+.domain-table tr:hover .role-edit-toggle,
+.role-edit-toggle:focus-visible {
+    opacity: 1;
+}
+.role-form {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin: 0;
+}
+/* `hidden` must win over `display:flex`, or the editor never collapses. */
+.role-form[hidden],
+.role-view[hidden] {
+    display: none;
+}
+.role-select {
+    padding: .35rem .5rem;
+    border: 1.5px solid var(--gray-200, #e5e7eb);
+    border-radius: 7px;
+    font-size: .85rem;
+    font-family: inherit;
+    color: var(--gray-800, #1f2937);
+    background: #fff;
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    border: 1px solid var(--gray-200, #e5e7eb);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--gray-600, #4b5563);
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+}
+.btn-icon:hover {
+    background: var(--gray-100, #f3f4f6);
+    color: #0f172a;
+}
+.role-save:not(:disabled):hover {
+    background: #f0fdf4;
+    border-color: #22c55e;
+    color: #15803d;
+}
+.role-cancel:hover {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #b91c1c;
+}
+.btn-icon:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+/* Column sorting (shared table-sort.js contract) */
+.domain-table th.is-sortable {
+    cursor: pointer;
+    user-select: none;
+}
+.domain-table th.is-sortable::after {
+    content: "\2195";
+    margin-left: 6px;
+    font-size: 12px;
+    color: var(--gray-400, #9ca3af);
+}
+.domain-table th.is-sortable:hover,
+.domain-table th[aria-sort] {
+    color: #dc2626;
+}
+.domain-table th[aria-sort="ascending"]::after  { content: "\2191"; color: #dc2626; }
+.domain-table th[aria-sort="descending"]::after { content: "\2193"; color: #dc2626; }
+/* Priority rank, shown only when several columns are stacked. */
+.domain-table th[data-sort-order]::before {
+    content: attr(data-sort-order);
+    display: inline-block;
+    margin-right: 4px;
+    min-width: 14px;
+    height: 14px;
+    line-height: 14px;
+    font-size: 10px;
+    text-align: center;
+    border-radius: 50%;
+    background: #dc2626;
+    color: #fff;
+}
+
+/* State badges */
+.badge-state {
+    display: inline-block;
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+}
+.badge-active   { background: #f0fdf4; color: #15803d; }
+.badge-inactive { background: var(--gray-100, #f3f4f6); color: var(--gray-600, #4b5563); }
+
+/* Row action buttons (toggle) */
+.btn-row {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .3rem;
+    min-width: 7.5rem;
+    padding: .4rem .8rem;
+    border: 1px solid var(--gray-200, #e5e7eb);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--gray-700, #374151);
+    font-size: .82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+}
+.btn-row:hover {
+    background: var(--gray-100, #f3f4f6);
+    color: #0f172a;
+}
+.btn-row-danger {
+    color: #b91c1c;
+    border-color: rgba(220, 38, 38, .3);
+}
+.btn-row-danger:hover {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #b91c1c;
+}
+
+/* Textareas mirror the auth.css input styling (which only targets input/select). */
+.superadmin-body textarea {
+    width: 100%;
+    border: 1.5px solid var(--gray-200, #e5e7eb);
+    border-radius: 8px;
+    padding: .6rem .85rem;
+    font-size: .92rem;
+    font-family: inherit;
+    color: var(--gray-800, #1f2937);
+    background: #fff;
+    resize: vertical;
+    transition: border-color .18s;
+    outline: none;
+}
+.superadmin-body textarea:focus { border-color: var(--blue); }
+.superadmin-body textarea::placeholder { color: var(--gray-400, #9ca3af); font-size: .87rem; }
+
+.form-group--narrow { flex: 0 0 9rem; min-width: 0; }
+
+/* Secondary line under a primary table cell (e.g. department description). */
+.cell-subtitle {
+    display: block;
+    margin-top: .15rem;
+    font-size: .78rem;
+    font-weight: 400;
+    color: var(--gray-600, #4b5563);
+}
+
+/* Places master-detail: list on the left, selected place's detail on the right. */
+.places-layout {
+    display: grid;
+    grid-template-columns: 22rem 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+.places-master { margin-bottom: 0; }
+.places-master h3,
+.places-detail h3 {
+    font-size: .9rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 1.5rem 0 .85rem;
+}
+
+/* The place list */
+.place-list {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+.place-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    width: 100%;
+    padding: .7rem .85rem;
+    border: 1px solid var(--gray-200, #e5e7eb);
+    border-radius: 9px;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.place-item:hover {
+    border-color: #cbd5e1;
+    background: var(--gray-100, #f3f4f6);
+}
+.place-item.is-active {
+    border-color: #0f172a;
+    background: #0f172a;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, .18);
+}
+.place-item-main { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.place-item-name {
+    font-size: .92rem;
+    font-weight: 600;
+    color: #0f172a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.place-item-sub {
+    font-size: .76rem;
+    color: var(--gray-600, #4b5563);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.place-item.is-active .place-item-name,
+.place-item.is-active .place-item-sub { color: #fff; }
+.place-item.is-active .place-item-sub { color: rgba(255, 255, 255, .7); }
+
+/* Department count + chevron on the right of each list item */
+.place-item-count {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    flex: 0 0 auto;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--gray-600, #4b5563);
+}
+.place-item.is-active .place-item-count { color: rgba(255, 255, 255, .85); }
+.place-item-chevron { transition: transform .15s; }
+.place-item.is-active .place-item-chevron { transform: translateX(2px); }
+
+.place-add-form { border-top: 1px solid var(--gray-100, #f3f4f6); padding-top: .25rem; }
+.place-add-form .form-group { margin-bottom: 1rem; }
+.place-add-row { display: flex; gap: 1rem; }
+.place-add-row .form-group { flex: 1; }
+.place-add-form .btn-submit { width: 100%; }
+
+/* The detail column */
+.places-detail { margin-bottom: 0; min-height: 18rem; }
+.places-detail-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: .85rem;
+    min-height: 16rem;
+    color: var(--gray-600, #4b5563);
+}
+.places-detail-empty[hidden] { display: none; }
+.places-detail-empty p { max-width: 22rem; font-size: .9rem; margin: 0; }
+.place-detail-panel[hidden] { display: none; }
+.place-detail-panel .domain-table { margin-bottom: .5rem; }
+.place-detail-panel .department-form { margin-top: 1.5rem; }
+.place-delete-form { margin-top: 1rem; }
+
+/* Per-place branding block (between the address and the departments table) */
+.place-branding {
+    margin: 1.25rem 0 1.5rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--gray-200, #e5e7eb);
+    border-radius: 10px;
+    background: var(--gray-100, #f8fafc);
+}
+.place-branding h3 { margin-top: 0; }
+.branding-hint {
+    font-size: .8rem;
+    color: var(--gray-600, #4b5563);
+    margin: -.5rem 0 1rem;
+}
+/* Logo | Favicon | Name | Colour. Flex-wrap (not a fixed grid) so each field
+   keeps its natural width and wraps cleanly instead of overlapping — the old
+   3-column grid broke once the Favicon field was added as a 4th item. */
+.branding-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: 1.25rem 2rem;
+    margin-bottom: 1.25rem;
+}
+.branding-row .form-group { margin-bottom: 0; }
+/* Labels are inline by default (auth.css only uppercases them) — force block so
+   every field's label sits on top, including the narrow colour swatch. */
+.branding-row label { display: block; margin-bottom: .4rem; }
+.branding-name { flex: 1 1 14rem; min-width: 12rem; }
+.branding-name input[type="text"] { width: 100%; }
+.branding-color { flex: 0 0 auto; }
+
+/* Logo: preview swatch + file button on one row, under the shared label. */
+.branding-logo-field { display: flex; align-items: center; gap: .65rem; }
+.branding-logo-preview {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: 1px solid var(--gray-200, #e5e7eb);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--gray-400, #9ca3af);
+    overflow: hidden;
+}
+.branding-logo-preview img { width: 100%; height: 100%; object-fit: contain; }
+.branding-logo input[type="file"],
+.branding-favicon input[type="file"] { font-size: .82rem; color: var(--gray-600, #4b5563); max-width: 11rem; }
+
+/* Color: native input trimmed to read as a 44px swatch, matching input height. */
+.branding-color input[type="color"] {
+    width: 4rem;
+    height: 44px;
+    padding: .2rem;
+    border: 1.5px solid var(--gray-200, #e5e7eb);
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.btn-branding-save { margin-top: 0; }
+
+@media (max-width: 980px) {
+    .branding-row { gap: 1rem 1.5rem; }
+    .branding-name { flex-basis: 100%; }
+}
+@media (max-width: 860px) {
+    .places-layout { grid-template-columns: 1fr; }
+}
+
+/* ── "Domaines configurés" — table collapses into stacked cards on mobile ──
+   One markup (the table keeps working with its sort/role-edit JS); CSS only
+   restacks the cells and pulls each field label from its data-label. */
+@media (max-width: 720px) {
+    /* Reclaim horizontal space — the desktop 2rem/1.75rem gutters are wasteful
+       on a phone and contribute to the table overflowing. */
+    .dashboard-content { padding: 1.1rem; }
+    .panel-section { padding: 1.2rem 1.1rem; }
+
+    /* The <table> itself must become a block so it fills the card width
+       instead of shrink-wrapping to the old fixed column widths. */
+    .domain-table,
+    .domain-table tbody,
+    .domain-table tr,
+    .domain-table td { display: block; width: auto; }
+    .domain-table { font-size: .92rem; }
+    .domain-table thead { display: none; }
+    .domain-table .col-role,
+    .domain-table .col-state,
+    .domain-table .col-action { width: auto; }
+
+    .domain-table tr {
+        border: 1px solid var(--gray-200, #e5e7eb);
+        border-radius: 12px;
+        padding: .25rem .95rem;
+        margin-bottom: .8rem;
+        background: var(--white, #fff);
+    }
+
+    .domain-table td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        min-width: 0;
+        padding: .6rem 0;
+        border-bottom: 1px solid var(--gray-100, #f3f4f6);
+        text-align: left;
+        white-space: normal;
+    }
+    .domain-table tr td:last-child { border-bottom: none; }
+
+    /* Field label, taken from the header cell we hid */
+    .domain-table td::before {
+        content: attr(data-label);
+        flex: none;
+        font-size: .68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        color: var(--gray-500);
+    }
+
+    /* Long domain value shrinks with an ellipsis rather than forcing width */
+    .domain-table .cell-domain { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .domain-table .col-action { text-align: left; white-space: normal; }
+
+    /* No hover on touch → keep the role-edit pencil visible so it stays usable */
+    .domain-table .role-edit-toggle { opacity: 1; }
+}
+/* In-page tabs (Administrateurs panel) */
+.admin-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--gray-200, #e5e7eb);
+}
+.admin-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .7rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    color: var(--gray-600, #4b5563);
+    font-size: .88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color .15s, border-color .15s;
+}
+.admin-tab:hover {
+    color: #0f172a;
+}
+.admin-tab.is-active {
+    color: #0f172a;
+    border-bottom-color: #dc2626;
+}
+
+/* Panel form fields: match the register form look. auth.css scopes its field
+   styling to .auth-body, which the super admin panel does not use, so the
+   invite/add forms need their own copy here. Scoped to .domain-form to avoid
+   touching table selects (.role-select) and the branding inputs. */
+.domain-form label {
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--gray-600, #4b5563);
+}
+.domain-form input[type="text"],
+.domain-form input[type="email"],
+.domain-form input[type="password"],
+.domain-form input[type="number"],
+.domain-form select {
+    width: 100%;
+    border: 1.5px solid var(--gray-200, #e5e7eb);
+    border-radius: 8px;
+    padding: .6rem .85rem;
+    font-size: .92rem;
+    font-family: inherit;
+    color: var(--gray-800, #1f2937);
+    background: #fff;
+    transition: border-color .18s, box-shadow .18s;
+    outline: none;
+}
+.domain-form input:focus,
+.domain-form select:focus {
+    border-color: var(--blue);
+}
+.domain-form input::placeholder {
+    color: var(--gray-400, #9ca3af);
+    font-size: .87rem;
+}
