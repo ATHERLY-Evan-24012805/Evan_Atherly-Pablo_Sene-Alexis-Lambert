@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 810" width="940" height="810" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-size="15">
+  <title>Graphe de flot de contrôle (CFG) de iqsort0</title>
+  <defs>
+    <marker id="fleche" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2933"/>
+    </marker>
+  </defs>
+
+  <rect width="940" height="810" fill="#ffffff"/>
+  <text x="20" y="28" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="bold" fill="#1f2933">Graphe de flot de contrôle (CFG) — iqsort0</text>
+
+  <!-- Arcs -->
+  <g fill="none" stroke="#1f2933" stroke-width="1.6" marker-end="url(#fleche)">
+    <path d="M 425 90 H 750"/>                       <!-- 1 -> 2 -->
+    <path d="M 330 132 V 185"/>                      <!-- 1 -> 3 -->
+    <path d="M 820 115 V 710 H 725"/>                <!-- 2 -> 9 -->
+    <path d="M 330 235 V 288"/>                      <!-- 3 -> 4 -->
+    <path d="M 330 372 V 418"/>                      <!-- 4 -> 5 -->
+    <path d="M 425 330 H 650 V 435"/>                <!-- 4 -> 8 -->
+    <path d="M 330 502 V 565"/>                      <!-- 5 -> 6 -->
+    <path d="M 440 460 H 490 V 710 H 425"/>          <!-- 5 -> 7 -->
+    <path d="M 330 615 V 685"/>                      <!-- 6 -> 7 -->
+    <path d="M 235 710 H 110 V 330 H 235"/>          <!-- 7 -> 4 -->
+    <path d="M 650 525 V 685"/>                      <!-- 8 -> 9 -->
+  </g>
+
+  <!-- Étiquettes des arcs -->
+  <g font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#52606d">
+    <text x="440" y="82">vrai</text>
+    <text x="340" y="162">faux</text>
+    <text x="340" y="400">vrai</text>
+    <text x="440" y="322">faux</text>
+    <text x="340" y="538">vrai</text>
+    <text x="448" y="452">faux</text>
+    <text x="120" y="525">boucle</text>
+  </g>
+
+  <!-- Nœuds de décision (losanges) -->
+  <g fill="#fff4d6" stroke="#b7791f" stroke-width="1.6">
+    <polygon points="330,48 425,90 330,132 235,90"/>
+    <polygon points="330,288 425,330 330,372 235,330"/>
+    <polygon points="330,418 440,460 330,502 220,460"/>
+  </g>
+
+  <!-- Nœuds d'instruction (rectangles) -->
+  <g fill="#e3effb" stroke="#2b6cb0" stroke-width="1.6">
+    <rect x="750" y="65" width="140" height="50"/>
+    <rect x="235" y="185" width="190" height="50"/>
+    <rect x="235" y="565" width="190" height="50"/>
+    <rect x="235" y="685" width="190" height="50"/>
+    <rect x="540" y="435" width="220" height="90"/>
+  </g>
+
+  <!-- Nœud de sortie -->
+  <rect x="575" y="685" width="150" height="50" rx="25" fill="#e6f4ea" stroke="#2f855a" stroke-width="1.6"/>
+
+  <!-- Contenu des nœuds -->
+  <g fill="#1f2933" text-anchor="middle">
+    <text x="330" y="95">n &lt;= 1</text>
+    <text x="820" y="95">return</text>
+    <text x="330" y="215">i = 1, j = 0</text>
+    <text x="330" y="335">i &lt; n</text>
+    <text x="330" y="465">a[i] &lt; a[0]</text>
+    <text x="330" y="595">swap(++j, i, a)</text>
+    <text x="330" y="715">i++</text>
+    <text x="650" y="463">swap(0, j, a)</text>
+    <text x="650" y="485">iqsort0(a, j)</text>
+    <text x="650" y="507" font-size="13">iqsort0(a+j+1, n-j-1)</text>
+    <text x="650" y="715" font-family="Arial, Helvetica, sans-serif">sortie</text>
+  </g>
+
+  <!-- Numéros des nœuds -->
+  <g>
+    <g fill="#1f2933">
+      <circle cx="262" cy="58" r="12"/>
+      <circle cx="750" cy="65" r="12"/>
+      <circle cx="235" cy="185" r="12"/>
+      <circle cx="262" cy="298" r="12"/>
+      <circle cx="254" cy="428" r="12"/>
+      <circle cx="235" cy="565" r="12"/>
+      <circle cx="235" cy="685" r="12"/>
+      <circle cx="540" cy="435" r="12"/>
+      <circle cx="582" cy="685" r="12"/>
+    </g>
+    <g fill="#ffffff" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold">
+      <text x="262" y="63">1</text>
+      <text x="750" y="70">2</text>
+      <text x="235" y="190">3</text>
+      <text x="262" y="303">4</text>
+      <text x="254" y="433">5</text>
+      <text x="235" y="570">6</text>
+      <text x="235" y="690">7</text>
+      <text x="540" y="440">8</text>
+      <text x="582" y="690">9</text>
+    </g>
+  </g>
+
+  <!-- Lignes du code source correspondantes -->
+  <g font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#7b8794">
+    <text x="232" y="122" text-anchor="end">l. 4</text>
+    <text x="895" y="80">l. 5</text>
+    <text x="228" y="228" text-anchor="end">l. 6</text>
+    <text x="232" y="362" text-anchor="end">l. 6</text>
+    <text x="222" y="492" text-anchor="end">l. 7</text>
+    <text x="228" y="608" text-anchor="end">l. 8</text>
+    <text x="228" y="752" text-anchor="end">l. 6</text>
+    <text x="765" y="485">l. 9-11</text>
+    <text x="730" y="752">l. 12</text>
+  </g>
+
+  <!-- Légende -->
+  <g font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#1f2933">
+    <polygon points="32,785 46,777 60,785 46,793" fill="#fff4d6" stroke="#b7791f" stroke-width="1.4"/>
+    <text x="68" y="790">décision</text>
+    <rect x="140" y="777" width="28" height="16" fill="#e3effb" stroke="#2b6cb0" stroke-width="1.4"/>
+    <text x="176" y="790">instruction(s)</text>
+    <rect x="280" y="777" width="28" height="16" rx="8" fill="#e6f4ea" stroke="#2f855a" stroke-width="1.4"/>
+    <text x="316" y="790">sortie</text>
+    <text x="400" y="790">Nœud 1 = entrée de la fonction · 9 nœuds · 11 arcs</text>
+  </g>
+</svg>
